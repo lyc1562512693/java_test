@@ -16,7 +16,7 @@ public class MyThreadPool {
         if(num<=THREAD_POOL_NUM){
             initWorker(num);
         }else{
-            System.out.println("该线程池最大允许添加的线程数为：" +THREAD_POOL_NUM);
+            System.out.println("该线程池最大允许添dsf加的线程数为：" +THREAD_POOL_NUM);
         }
     }
     public void execute(Task task){
