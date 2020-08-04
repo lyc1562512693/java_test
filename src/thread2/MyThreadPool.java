@@ -9,26 +9,29 @@ public class MyThreadPool {
     private LinkedList<Task> taskList = new LinkedList<>();
     private List<Worker> workerList = new ArrayList<>();
 
-    public MyThreadPool(){
+    public MyThreadPool() {
         initWorker(THREAD_POOL_NUM);
     }
-    public MyThreadPool(int num){
-        if(num<=THREAD_POOL_NUM){
+
+    public MyThreadPool(int num) {
+        if (num <= THREAD_POOL_NUM) {
             initWorker(num);
-        }else{
-            System.out.println("该线程池最大允许添dsf加的线程数为：" +THREAD_POOL_NUM);
+        } else {
+            System.out.println("该线程池最大允许添dsf加的线程数为：" + THREAD_POOL_NUM);
         }
     }
-    public void execute(Task task){
+
+    public void execute(Task task) {
         synchronized (taskList) {
             taskList.add(task);
             taskList.notify();
         }
     }
-    public void shutdown(){
-        synchronized (taskList){
+
+    public void shutdown() {
+        synchronized (taskList) {
             //taskList.notifyAll();//这条语句写在这里表示阻塞中的任务执行完再结束线程
-            for(Worker worker : workerList){
+            for (Worker worker : workerList) {
                 worker.shutdown();
             }
             taskList.notifyAll();//这条语句写在这里表示阻塞中的任务不执行完就结束线程
@@ -36,48 +39,53 @@ public class MyThreadPool {
 
         System.out.println("成功结束线程池内的所有线程");
     }
-    public void initWorker(int num){
-        for(int i = 0;i< num;i++){
+
+    public void initWorker(int num) {
+        for (int i = 0; i < num; i++) {
             Worker worker = new Worker();
-            Thread thread = new Thread(worker,"worker" + num);
+            Thread thread = new Thread(worker, "worker" + num);
             thread.start();
             workerList.add(worker);
         }
     }
-    public void addWorker(int num){
-        if((workerList.size() + num) > THREAD_POOL_NUM){
+
+    public void addWorker(int num) {
+        if ((workerList.size() + num) > THREAD_POOL_NUM) {
             initWorker(THREAD_POOL_NUM - workerList.size());
-        }else{
+        } else {
             initWorker(num);
         }
     }
-    class Worker implements Runnable{
+
+    class Worker implements Runnable {
         private Boolean running = true;
+
         @Override
         public void run() {
-            while(running){
+            while (running) {
                 Task task = null;
-                synchronized (taskList){
-                    while(taskList.isEmpty()){
+                synchronized (taskList) {
+                    while (taskList.isEmpty()) {
                         try {
                             taskList.wait();
-                        }catch(Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        if(!running){
+                        if (!running) {
                             break;
                         }
                     }
-                    if(!taskList.isEmpty()){
+                    if (!taskList.isEmpty()) {
                         task = taskList.removeFirst();
                     }
                 }
-                if(task != null){
+                if (task != null) {
                     task.run();
                 }
             }
         }
-        public void shutdown(){
+
+        public void shutdown() {
             this.running = false;
         }
     }

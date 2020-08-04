@@ -9,7 +9,7 @@ public class ThreadPoolMain2 {
         myThreadPool.execute(t2);
         try {
             Thread.sleep(2000);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         myThreadPool.shutdown();
